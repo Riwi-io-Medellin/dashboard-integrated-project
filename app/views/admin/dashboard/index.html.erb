@@ -1,0 +1,112 @@
+<% content_for(:title, "Dashboard — RIWI Proyectos Integrados") %>
+
+<!-- Header -->
+<div class="mb-8">
+  <h1 class="text-2xl lg:text-3xl font-bold text-white">Dashboard</h1>
+  <p class="text-gray-500 mt-1">Resumen general de Proyectos Integrados</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Total Coders -->
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 hover:border-violet-500/30 transition-all duration-300">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+        <svg class="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-white"><%= @total_coders %></p>
+    <p class="text-sm text-gray-500 mt-1">Coders registrados</p>
+  </div>
+
+  <!-- Total Teams -->
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 hover:border-fuchsia-500/30 transition-all duration-300">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-10 h-10 rounded-xl bg-fuchsia-500/10 flex items-center justify-center">
+        <svg class="w-5 h-5 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-white"><%= @total_teams %></p>
+    <p class="text-sm text-gray-500 mt-1">Equipos formados</p>
+  </div>
+
+  <!-- Total Groups -->
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 hover:border-emerald-500/30 transition-all duration-300">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+        <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-white"><%= @total_groups %></p>
+    <p class="text-sm text-gray-500 mt-1">Grupos activos</p>
+  </div>
+
+  <!-- Unassigned Coders -->
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 hover:border-amber-500/30 transition-all duration-300">
+    <div class="flex items-center justify-between mb-3">
+      <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+    </div>
+    <p class="text-3xl font-bold text-white"><%= @unassigned_coders %></p>
+    <p class="text-sm text-gray-500 mt-1">Sin equipo asignado</p>
+  </div>
+</div>
+
+<!-- Groups Breakdown -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+    <h2 class="text-lg font-semibold text-white mb-4">Coders por Grupo</h2>
+    <div class="space-y-3">
+      <% @groups_with_stats.each do |group| %>
+        <div class="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-xs font-bold text-violet-400">
+              <%= group.name[0..1].upcase %>
+            </div>
+            <span class="text-sm font-medium text-gray-300"><%= group.name %></span>
+          </div>
+          <div class="flex items-center gap-4 text-xs">
+            <span class="text-gray-500"><span class="text-violet-400 font-medium"><%= group.coders_count %></span> coders</span>
+            <span class="text-gray-500"><span class="text-fuchsia-400 font-medium"><%= group.teams_count %></span> equipos</span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Recent Teams -->
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+    <h2 class="text-lg font-semibold text-white mb-4">Equipos Recientes</h2>
+    <% if @recent_teams.any? %>
+      <div class="space-y-3">
+        <% @recent_teams.each do |team| %>
+          <div class="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0">
+            <div>
+              <p class="text-sm font-medium text-gray-300"><%= team.name %></p>
+              <p class="text-xs text-gray-500"><%= team.group.name %> · <%= team.category_label %></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs px-2 py-1 rounded-full <%= team.registered_at ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400' %>">
+                <%= team.registered_at ? 'Registrado' : 'Pendiente' %>
+              </span>
+              <span class="text-xs text-gray-500"><%= team.coders.count %> miembros</span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="text-center py-8 text-gray-500 text-sm">
+        <p>No hay equipos registrados aún.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

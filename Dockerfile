@@ -3,9 +3,7 @@
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t dashboard_integrated_project .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name dashboard_integrated_project dashboard_integrated_project
-
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+# docker run -d -p 3000:3000 -e RAILS_MASTER_KEY=<value from config/master.key> --name dashboard_integrated_project dashboard_integrated_project
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.2.3
@@ -49,8 +47,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
-
-
 # Final stage for app image
 FROM base
 
@@ -67,6 +63,6 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Start server directly with Rails (Railway expects PORT env variable, defaults to 3000)
+EXPOSE 3000
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

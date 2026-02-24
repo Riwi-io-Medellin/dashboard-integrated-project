@@ -1,0 +1,474 @@
+<% content_for(:title, "Crear Equipo — RIWI") %>
+
+<div class="max-w-2xl mx-auto">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-white">Crear Equipo</h1>
+    <p class="text-gray-400 text-sm mt-1">Arma tu equipo de proyecto integrado</p>
+  </div>
+
+  <!-- Form -->
+  <form id="registration-form" action="<%= portal_teams_path %>" method="post" class="space-y-5">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <input type="hidden" name="members_data" id="members-data" value="[]">
+
+    <% if flash.now[:alert] %>
+      <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span><%= flash.now[:alert] %></span>
+      </div>
+    <% end %>
+
+    <!-- Team Name -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Equipo</label>
+      <input type="text" name="team_name" id="field-team-name" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all placeholder-gray-600" placeholder="Ej: Los Innovadores" value="<%= @submitted_team_name %>">
+    </div>
+
+    <!-- Project Category -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Categoría del Proyecto</label>
+      <select name="project_category" id="field-category" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+        <option value="">Selecciona una categoría</option>
+        <% Team::CATEGORY_LABELS.each do |key, label| %>
+          <option value="<%= key %>" <%= @submitted_category == key ? 'selected' : '' %>><%= label %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- Clan/Group -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Clan</label>
+      <select name="group_id" id="team-group-id" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all">
+        <option value="">Selecciona tu clan</option>
+        <% @groups.each do |group| %>
+          <option value="<%= group.id %>" data-name="<%= group.name %>" <%= @submitted_group_id.to_s == group.id.to_s ? 'selected' : '' %>><%= group.name %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- OpenAI API Toggle -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <label class="block text-sm font-medium text-gray-300 mb-1">¿El proyecto usará la API de OpenAI?</label>
+          <p class="text-xs text-gray-500">Esto nos ayuda a organizar el acceso a las claves API para tu equipo durante el proyecto integrado.</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer mt-1 flex-shrink-0">
+          <input type="checkbox" name="needs_openai_api" id="needs-openai-api" value="1" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-cyan-600"></div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Members Section -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-sm font-medium text-gray-300">Miembros del Equipo</label>
+        <span id="member-count" class="text-xs text-gray-500">0 de 3-6</span>
+      </div>
+      <p class="text-xs text-gray-500 mb-4">Agrega los miembros a tu equipo llenando sus datos.</p>
+
+      <!-- Add New Person Form -->
+      <div id="panel-new" class="mb-4">
+        <div class="space-y-3 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
+          <!-- Error Message Container -->
+          <div id="new-member-error" class="hidden p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-center gap-2">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span id="new-member-error-text"></span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Nombre *</label>
+              <input type="text" id="new-first-name" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="Juan">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Apellido *</label>
+              <input type="text" id="new-last-name" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="Pérez">
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">No. de documento</label>
+              <input type="tel" id="new-national-id" inputmode="numeric" pattern="[0-9]*" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="Ej: 1020304050">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Correo Electrónico *</label>
+              <input type="email" id="new-email" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="juan.perez@ejemplo.com">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Clan</label>
+            <select id="new-member-group" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all">
+              <option value="">Mismo clan del equipo</option>
+              <% @groups.each do |group| %>
+                <option value="<%= group.name %>"><%= group.name %></option>
+              <% end %>
+            </select>
+          </div>
+          <button type="button" id="btn-add-new" class="w-full py-2.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+            + Agregar Persona
+          </button>
+        </div>
+      </div>
+
+      <!-- Selected Members List -->
+      <div id="selected-members" class="space-y-2"></div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="text-center py-6 text-gray-600">
+        <svg class="w-10 h-10 mx-auto mb-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+        <p class="text-xs">Agrega al menos 3 miembros a tu equipo</p>
+      </div>
+    </div>
+
+    <!-- Leader validation error -->
+    <div id="leader-error" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm flex items-start gap-3">
+      <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <span>Debes seleccionar un <strong>líder</strong> para el equipo. Haz clic en el botón "☆ Líder" junto al miembro que lo será.</span>
+    </div>
+
+    <!-- Submit -->
+    <button type="button" id="submit-btn" class="w-full py-3.5 text-white font-semibold rounded-xl transition-all duration-200 text-sm disabled:opacity-40 disabled:cursor-not-allowed" style="background: linear-gradient(135deg, #7C3AED, #6D28D9); box-shadow: 0 4px 20px rgba(124,58,237,0.3);" disabled>
+      Crear Equipo
+    </button>
+
+    <p id="submit-hint" class="text-center text-xs text-gray-600">Necesitas entre 3 y 6 miembros y un líder para crear el equipo</p>
+  </form>
+</div>
+
+<script>
+(function() {
+  var SUBMITTED_MEMBERS = '<%= @submitted_members.to_s.gsub("'", "\\'") %>';
+  var SUBMITTED_OPENAI = '<%= @submitted_openai %>';
+
+  // State
+  var members = [];
+  var searchTimeout = null;
+
+  function init() {
+    var btnAddNew = document.getElementById('btn-add-new');
+    if (!btnAddNew || btnAddNew.dataset.initialized) return;
+    btnAddNew.dataset.initialized = "true";
+
+    var selectedMembers = document.getElementById('selected-members');
+    var membersDataInput = document.getElementById('members-data');
+    var submitBtn = document.getElementById('submit-btn');
+    var memberCount = document.getElementById('member-count');
+    var emptyState = document.getElementById('empty-state');
+    var submitHint = document.getElementById('submit-hint');
+    var panelNew = document.getElementById('panel-new');
+    
+    // New member inputs
+    var inputFirstName = document.getElementById('new-first-name');
+    var inputLastName = document.getElementById('new-last-name');
+    var inputEmail = document.getElementById('new-email');
+    var inputNationalId = document.getElementById('new-national-id');
+    var inputGroup = document.getElementById('new-member-group');
+    var errorContainer = document.getElementById('new-member-error');
+    var errorText = document.getElementById('new-member-error-text');
+
+    // Guard
+    if (!btnAddNew) return;
+
+    // Helper to show error
+    function showError(message) {
+      if (errorContainer && errorText) {
+        errorText.textContent = message;
+        errorContainer.classList.remove('hidden');
+      } else {
+        alert(message); // Fallback
+      }
+    }
+
+    // Helper to hide error
+    function hideError() {
+      if (errorContainer) {
+        errorContainer.classList.add('hidden');
+      }
+    }
+    
+    // Helper to reset borders
+    function resetBorders() {
+      [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+        if(el) el.classList.remove('border-red-500', 'focus:ring-red-500');
+        if(el) el.classList.add('border-gray-700', 'focus:ring-cyan-500/50');
+      });
+    }
+
+    // Helper to highlight error field
+    function highlightError(element) {
+      if (!element) return;
+      element.classList.remove('border-gray-700', 'focus:ring-cyan-500/50');
+      element.classList.add('border-red-500', 'focus:ring-red-500');
+    }
+
+    // Clear error on input
+    [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+      if (el) {
+        el.addEventListener('input', function() {
+          hideError();
+          resetBorders();
+        });
+      }
+    });
+
+    // Numeric-only filter for document field
+    inputNationalId.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // Restore submitted members if coming back from a server error
+    if (SUBMITTED_MEMBERS && SUBMITTED_MEMBERS.trim() !== '' && SUBMITTED_MEMBERS !== 'null' && SUBMITTED_MEMBERS !== '[]') {
+      try {
+        var restored = JSON.parse(SUBMITTED_MEMBERS);
+        if (Array.isArray(restored) && restored.length > 0) {
+          members = restored;
+          renderMembers();
+        }
+      } catch(e) { /* ignore parse errors */ }
+    }
+
+    // Restore OpenAI toggle
+    if (SUBMITTED_OPENAI === '1') {
+      var openaiToggle = document.getElementById('needs-openai-api');
+      if (openaiToggle) openaiToggle.checked = true;
+    }
+
+    btnAddNew.addEventListener('click', function(e) {
+      e.preventDefault(); // Prevent double triggering
+      // Reset errors
+      hideError();
+      resetBorders();
+
+      var firstName = inputFirstName.value.trim();
+      var lastName = inputLastName.value.trim();
+      var email = inputEmail.value.trim();
+      var nationalId = inputNationalId.value.trim();
+      var groupName = inputGroup.value;
+
+      // Validations
+      if (!firstName) {
+        showError('El nombre es obligatorio.');
+        highlightError(inputFirstName);
+        return;
+      }
+      
+      if (!lastName) {
+        showError('El apellido es obligatorio.');
+        highlightError(inputLastName);
+        return;
+      }
+      
+      if (!email) {
+        showError('El correo electrónico es obligatorio.');
+        highlightError(inputEmail);
+        return;
+      }
+      
+      // Email format check — only ASCII, no unicode characters allowed
+      if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
+        showError('Ingresa un correo electrónico válido (solo letras, números y símbolos estándar).');
+        highlightError(inputEmail);
+        return;
+      }
+
+      // Check duplicate email in current list
+      var duplicate = members.find(function(m) { 
+        return m.email && m.email.toLowerCase() === email.toLowerCase(); 
+      });
+      
+      if (duplicate) {
+        showError('Ya agregaste un miembro con ese correo.');
+        highlightError(inputEmail);
+        return;
+      }
+
+      // Check duplicate document in current list
+      if (nationalId) {
+        var duplicateDoc = members.find(function(m) { 
+          return m.national_id && m.national_id === nationalId; 
+        });
+        
+        if (duplicateDoc) {
+          showError('Ya agregaste un miembro con ese número de documento.');
+          highlightError(inputNationalId);
+          return;
+        }
+      }
+
+      if (members.length >= 6) {
+        showError('Máximo 6 miembros por equipo.');
+        return;
+      }
+
+      // Check if already in a team via API (real-time)
+      submitBtn.disabled = true;
+      btnAddNew.disabled = true;
+      btnAddNew.textContent = 'Verificando...';
+
+      var apiUrl = '/api/coders/check_team?'
+        + (email ? 'email=' + encodeURIComponent(email) : '')
+        + (nationalId ? '&national_id=' + encodeURIComponent(nationalId) : '');
+
+      fetch(apiUrl)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          btnAddNew.textContent = '+ Agregar Persona';
+          btnAddNew.disabled = false;
+
+          if (data.in_team) {
+            showError((data.coder_name || 'Esta persona') + ' ya pertenece a otro equipo.');
+            highlightError(inputEmail);
+            return;
+          }
+
+          // If no group selected, use team's group
+          if (!groupName) {
+            var teamGroupSelect = document.getElementById('team-group-id');
+            var selectedOption = teamGroupSelect.options[teamGroupSelect.selectedIndex];
+            groupName = selectedOption && selectedOption.dataset.name ? selectedOption.dataset.name : '';
+          }
+
+          members.push({
+            type: 'new',
+            first_name: firstName,
+            last_name: lastName,
+            name: firstName + ' ' + lastName,
+            email: email,
+            national_id: nationalId,
+            group: groupName || 'Sin clan',
+            is_leader: false
+          });
+
+          // Clear inputs
+          inputFirstName.value = '';
+          inputLastName.value = '';
+          inputEmail.value = '';
+          inputNationalId.value = '';
+          inputGroup.selectedIndex = 0;
+
+          renderMembers();
+        })
+        .catch(function() {
+          // If API fails, allow adding anyway
+          btnAddNew.textContent = '+ Agregar Persona';
+          btnAddNew.disabled = false;
+
+        });
+    });
+
+    // Render members
+    function renderMembers() {
+      if (members.length === 0) {
+        selectedMembers.innerHTML = '';
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+        selectedMembers.innerHTML = members.map(function(member, index) {
+          var isLeader = member.is_leader;
+          var initials = member.name.split(' ').map(function(n) { return n[0]; }).slice(0, 2).join('').toUpperCase();
+          var badge = '<span class="text-xs px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400">Miembro</span>';
+
+          var subtitle = member.group ? 'Clan: ' + member.group : 'Sin clan';
+          if (member.email) {
+            subtitle += ' • ' + member.email;
+          }
+          if (member.national_id) {
+            subtitle += ' • Doc: ' + member.national_id;
+          }
+
+          return '<div class="flex items-center gap-3 p-3 rounded-xl border transition-all ' + (isLeader ? 'bg-amber-500/5 border-amber-500/30' : 'bg-gray-800/30 border-gray-700/50') + '">' +
+            '<div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ' + (isLeader ? 'bg-gradient-to-br from-amber-400/30 to-orange-400/30 text-amber-300' : 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-300') + '">' + initials + '</div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="flex items-center gap-2">' +
+                '<p class="text-sm font-medium truncate ' + (isLeader ? 'text-amber-200' : 'text-gray-200') + '">' + member.name + '</p>' +
+                badge +
+              '</div>' +
+              '<p class="text-xs text-gray-500 truncate">' + subtitle + '</p>' +
+            '</div>' +
+            '<div class="flex items-center gap-1 flex-shrink-0">' +
+              '<button type="button" class="leader-btn px-2 py-1 text-xs rounded-lg transition-all ' + (isLeader ? 'bg-amber-500/20 text-amber-400' : 'bg-gray-700 text-gray-500 hover:text-amber-400 hover:bg-amber-500/10') + '" data-index="' + index + '">' +
+                (isLeader ? '★ Líder' : '☆ Líder') +
+              '</button>' +
+              '<button type="button" class="remove-btn p-1.5 text-gray-600 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10" data-index="' + index + '">' +
+                '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      memberCount.textContent = members.length + ' de 3-6';
+      membersDataInput.value = JSON.stringify(members);
+
+      var hasLeader = members.some(function(m) { return m.is_leader; });
+      var validCount = members.length >= 3 && members.length <= 6;
+      submitBtn.disabled = !(validCount && hasLeader);
+
+      if (validCount && hasLeader) {
+        submitHint.textContent = '✓ Listo para crear';
+        submitHint.className = 'text-center text-xs text-emerald-400';
+      } else if (members.length > 0 && !hasLeader) {
+        submitHint.textContent = 'Selecciona un líder para tu equipo';
+        submitHint.className = 'text-center text-xs text-amber-400';
+      } else if (members.length > 0 && members.length < 3) {
+        submitHint.textContent = 'Faltan ' + (3 - members.length) + ' miembros más';
+        submitHint.className = 'text-center text-xs text-gray-500';
+      } else {
+        submitHint.textContent = 'Necesitas entre 3 y 6 miembros y un líder para crear el equipo';
+        submitHint.className = 'text-center text-xs text-gray-600';
+      }
+    }
+
+    // Event delegation for leader/remove buttons
+    selectedMembers.addEventListener('click', function(e) {
+      var leaderBtn = e.target.closest('.leader-btn');
+      if (leaderBtn) {
+        var idx = parseInt(leaderBtn.dataset.index);
+        members.forEach(function(m, i) { m.is_leader = (i === idx); });
+        renderMembers();
+      }
+
+      var removeBtn = e.target.closest('.remove-btn');
+      if (removeBtn) {
+        var idx2 = parseInt(removeBtn.dataset.index);
+        members.splice(idx2, 1);
+        renderMembers();
+      }
+    });
+
+    // Submit button with leader validation
+    submitBtn.addEventListener('click', function() {
+      var leaderError = document.getElementById('leader-error');
+      var hasLeader = members.some(function(m) { return m.is_leader; });
+      var validCount = members.length >= 3 && members.length <= 6;
+
+      if (!validCount || !hasLeader) {
+        if (!hasLeader && members.length > 0) {
+          leaderError.classList.remove('hidden');
+          leaderError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      leaderError.classList.add('hidden');
+      document.getElementById('registration-form').submit();
+    });
+
+  }
+
+  // Run on turbo:load only to avoid duplicates
+  document.addEventListener('turbo:load', init);
+  if (document.readyState !== 'loading') {
+    init();
+  } else {
+    document.addEventListener('DOMContentLoaded', init);
+  }
+})();
+</script>

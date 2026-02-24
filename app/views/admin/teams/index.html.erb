@@ -1,0 +1,78 @@
+<% content_for(:title, "Equipos — RIWI") %>
+
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl lg:text-3xl font-bold text-white">Equipos</h1>
+    <p class="text-gray-500 mt-1">Gestiona los equipos de proyectos integrados</p>
+  </div>
+  <%= link_to new_admin_team_path, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25" do %>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nuevo Equipo
+  <% end %>
+</div>
+
+<!-- Filter by Group -->
+<div class="mb-6">
+  <%= form_with url: admin_teams_path, method: :get, class: "flex gap-3" do %>
+    <select name="group_id" class="px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all" onchange="this.form.requestSubmit()">
+      <option value="">Todos los grupos</option>
+      <% @groups.each do |group| %>
+        <option value="<%= group.id %>" <%= 'selected' if params[:group_id].to_s == group.id.to_s %>><%= group.name %></option>
+      <% end %>
+    </select>
+  <% end %>
+</div>
+
+<!-- Teams Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <% @teams.each do |team| %>
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5 hover:border-violet-500/30 transition-all duration-300 group">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <h3 class="text-base font-semibold text-gray-200 group-hover:text-white transition-colors"><%= team.name %></h3>
+          <p class="text-xs text-gray-500 mt-0.5"><%= team.group.name %></p>
+        </div>
+        <span class="text-xs px-2.5 py-1 rounded-full <%= team.registered_at ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400' %>">
+          <%= team.registered_at ? 'Registrado' : 'Pendiente' %>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 mb-4">
+        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs bg-gray-800 text-gray-400"><%= team.category_label %></span>
+        <span class="text-xs text-gray-600">·</span>
+        <span class="text-xs text-gray-500"><%= team.coders.count %> miembros</span>
+      </div>
+
+      <% if team.coders.any? %>
+        <div class="flex -space-x-2 mb-4">
+          <% team.coders.limit(5).each do |coder| %>
+            <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500/30 to-fuchsia-500/30 border-2 border-gray-900 flex items-center justify-center text-xs font-bold text-violet-300" title="<%= coder.full_name %>">
+              <%= coder.first_name[0] %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="flex items-center gap-2 pt-3 border-t border-gray-800/50">
+        <%= link_to admin_team_path(team), class: "flex-1 text-center px-3 py-2 text-xs font-medium text-gray-400 hover:text-violet-400 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all" do %>
+          Ver Detalle
+        <% end %>
+        <%= link_to qr_admin_team_path(team), class: "flex-1 text-center px-3 py-2 text-xs font-medium text-gray-400 hover:text-fuchsia-400 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all" do %>
+          Código QR
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @teams.empty? %>
+  <div class="bg-gray-900 rounded-2xl border border-gray-800 p-12 text-center">
+    <svg class="w-16 h-16 mx-auto mb-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+    </svg>
+    <p class="text-gray-400 text-sm mb-2">No hay equipos registrados aún.</p>
+    <p class="text-gray-600 text-xs">Crea un equipo y comparte el código QR para el registro.</p>
+  </div>
+<% end %>

@@ -1,0 +1,22 @@
+<%= form_with(model: [:admin, group], class: "space-y-6") do |f| %>
+  <% if group.errors.any? %>
+    <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+      <p class="font-medium mb-2">Se encontraron errores:</p>
+      <ul class="list-disc list-inside space-y-1">
+        <% group.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, "Nombre del grupo", class: "block text-sm font-medium text-gray-300 mb-2" %>
+    <%= f.text_field :name, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600", placeholder: "Ej: Thompson, Turing..." %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= f.submit (group.persisted? ? "Actualizar Grupo" : "Crear Grupo"), class: "px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25 cursor-pointer" %>
+    <%= link_to "Cancelar", admin_groups_path, class: "px-6 py-3 text-sm text-gray-400 hover:text-gray-200 transition-colors" %>
+  </div>
+<% end %>

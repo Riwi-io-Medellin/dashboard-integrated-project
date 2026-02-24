@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+  <title><%= content_for(:title) || "Dashboard Integrated Project" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    h1, h2, h3, .font-heading { font-family: 'Outfit', system-ui, sans-serif; }
+  </style>
+</head>
+<body class="h-full bg-slate-950">
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
+      <%= yield %>
+    </div>
+  </div>
+</body>
+</html>

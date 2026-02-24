@@ -1,0 +1,341 @@
+<% content_for(:title, "Registro de Equipo — #{@team.name}") %>
+
+<div class="space-y-6">
+  <!-- Team Header -->
+  <div class="text-center">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-4 shadow-xl shadow-violet-500/30">
+      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-white">Registro de Equipo</h1>
+    <p class="text-gray-400 text-sm mt-1">Grupo: <span class="text-violet-400 font-medium"><%= @team.group.name %></span></p>
+  </div>
+
+  <!-- Registration Form -->
+  <form id="registration-form" action="<%= team_registration_path(token: @team.token) %>" method="post" class="space-y-5">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <input type="hidden" name="members_data" id="members-data" value="[]">
+
+    <!-- Team Name -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Nombre del Equipo</label>
+      <input type="text" name="team_name" value="<%= @team.name %>" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600" placeholder="Nombre de tu equipo">
+    </div>
+
+    <!-- Project Category -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Categoría del Proyecto</label>
+      <select name="project_category" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all">
+        <option value="">Selecciona una categoría</option>
+        <% Team::CATEGORY_LABELS.each do |key, label| %>
+          <option value="<%= key %>" <%= 'selected' if @team.project_category == key %>><%= label %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- Members Section -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-sm font-medium text-gray-300">Miembros del Equipo</label>
+        <span id="member-count" class="text-xs text-gray-500">0 de 3-6</span>
+      </div>
+      <p class="text-xs text-gray-500 mb-4">Busca compañeros ya registrados o agrega personas nuevas.</p>
+
+      <!-- Add Member Tabs -->
+      <div class="flex gap-2 mb-4">
+        <button type="button" id="tab-search" class="flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-violet-500/20 text-violet-400 border border-violet-500/30" onclick="switchTab('search')">
+          <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          Buscar Existente
+        </button>
+        <button type="button" id="tab-new" class="flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-gray-800 text-gray-400 border border-gray-700" onclick="switchTab('new')">
+          <svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Agregar Nuevo
+        </button>
+      </div>
+
+      <!-- Search Existing Coder -->
+      <div id="panel-search" class="mb-4">
+        <div class="relative">
+          <input type="text" id="coder-search" placeholder="Buscar por nombre, email o ID de estudiante..." class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder-gray-600 pr-10" autocomplete="off">
+          <div id="search-spinner" class="hidden absolute right-3 top-3">
+            <svg class="animate-spin h-5 w-5 text-violet-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+        </div>
+        <!-- Search Results Dropdown -->
+        <div id="search-results" class="hidden mt-2 bg-gray-800 border border-gray-700 rounded-xl overflow-hidden max-h-48 overflow-y-auto"></div>
+      </div>
+
+      <!-- Add New Person Form -->
+      <div id="panel-new" class="hidden mb-4">
+        <div class="space-y-3 p-4 bg-gray-800/50 rounded-xl border border-gray-700/50">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Nombre *</label>
+              <input type="text" id="new-first-name" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder-gray-600" placeholder="Juan">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Apellido *</label>
+              <input type="text" id="new-last-name" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder-gray-600" placeholder="Pérez">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-400 mb-1">Email (opcional)</label>
+            <input type="email" id="new-email" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all placeholder-gray-600" placeholder="juan@email.com">
+          </div>
+          <button type="button" onclick="addNewMember()" class="w-full py-2.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
+            + Agregar Persona
+          </button>
+        </div>
+      </div>
+
+      <!-- Selected Members List -->
+      <div id="selected-members" class="space-y-2"></div>
+
+      <!-- Empty state -->
+      <div id="empty-state" class="text-center py-6 text-gray-600">
+        <svg class="w-10 h-10 mx-auto mb-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+        </svg>
+        <p class="text-xs">Agrega al menos 3 miembros a tu equipo</p>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" id="submit-btn" class="w-full py-3.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25 text-sm disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+      Registrar Equipo
+    </button>
+
+    <p id="submit-hint" class="text-center text-xs text-gray-600">Necesitas entre 3 y 6 miembros y un líder para registrar el equipo</p>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // State
+  let members = [];
+  let searchTimeout = null;
+  const searchInput = document.getElementById('coder-search');
+  const searchResults = document.getElementById('search-results');
+  const searchSpinner = document.getElementById('search-spinner');
+  const selectedMembers = document.getElementById('selected-members');
+  const membersDataInput = document.getElementById('members-data');
+  const submitBtn = document.getElementById('submit-btn');
+  const memberCount = document.getElementById('member-count');
+  const emptyState = document.getElementById('empty-state');
+  const submitHint = document.getElementById('submit-hint');
+
+  // Tab switching
+  window.switchTab = function(tab) {
+    const tabSearch = document.getElementById('tab-search');
+    const tabNew = document.getElementById('tab-new');
+    const panelSearch = document.getElementById('panel-search');
+    const panelNew = document.getElementById('panel-new');
+
+    if (tab === 'search') {
+      tabSearch.className = 'flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-violet-500/20 text-violet-400 border border-violet-500/30';
+      tabNew.className = 'flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-gray-800 text-gray-400 border border-gray-700';
+      panelSearch.classList.remove('hidden');
+      panelNew.classList.add('hidden');
+    } else {
+      tabNew.className = 'flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+      tabSearch.className = 'flex-1 py-2.5 text-xs font-medium rounded-xl transition-all bg-gray-800 text-gray-400 border border-gray-700';
+      panelNew.classList.remove('hidden');
+      panelSearch.classList.add('hidden');
+    }
+  };
+
+  // Search with debounce
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+
+    if (query.length < 2) {
+      searchResults.classList.add('hidden');
+      searchResults.innerHTML = '';
+      return;
+    }
+
+    searchSpinner.classList.remove('hidden');
+    searchTimeout = setTimeout(function() {
+      fetch('/api/coders/search?q=' + encodeURIComponent(query))
+        .then(r => r.json())
+        .then(function(data) {
+          searchSpinner.classList.add('hidden');
+          // Filter out already added members
+          const addedIds = members.filter(m => m.type === 'existing').map(m => m.coder_id);
+          const filtered = data.filter(c => !addedIds.includes(c.id));
+
+          if (filtered.length === 0) {
+            searchResults.innerHTML = '<div class="p-3 text-center text-xs text-gray-500">No se encontraron resultados</div>';
+          } else {
+            searchResults.innerHTML = filtered.map(function(coder) {
+              return '<div class="search-result-item flex items-center gap-3 p-3 hover:bg-gray-700/50 cursor-pointer transition-colors border-b border-gray-700/30 last:border-0" data-coder=\'' + JSON.stringify(coder).replace(/'/g, '&#39;') + '\'>' +
+                '<div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-xs font-bold text-violet-300">' +
+                  coder.name.split(' ').map(n => n[0]).slice(0, 2).join('') +
+                '</div>' +
+                '<div class="flex-1 min-w-0">' +
+                  '<p class="text-sm text-gray-200 truncate">' + coder.name + '</p>' +
+                  '<p class="text-xs text-gray-500 truncate">' + (coder.email || 'Sin email') + (coder.student_id ? ' · ID: ' + coder.student_id : '') + '</p>' +
+                '</div>' +
+                '<span class="text-xs text-violet-400 flex-shrink-0">Agregar</span>' +
+              '</div>';
+            }).join('');
+          }
+          searchResults.classList.remove('hidden');
+        })
+        .catch(function() {
+          searchSpinner.classList.add('hidden');
+        });
+    }, 300);
+  });
+
+  // Click on search result
+  searchResults.addEventListener('click', function(e) {
+    const item = e.target.closest('.search-result-item');
+    if (!item) return;
+
+    const coder = JSON.parse(item.dataset.coder);
+
+    if (members.length >= 6) {
+      alert('Máximo 6 miembros por equipo.');
+      return;
+    }
+
+    members.push({
+      type: 'existing',
+      coder_id: coder.id,
+      name: coder.name,
+      email: coder.email,
+      student_id: coder.student_id,
+      is_leader: false
+    });
+
+    searchInput.value = '';
+    searchResults.classList.add('hidden');
+    renderMembers();
+  });
+
+  // Add new member
+  window.addNewMember = function() {
+    const firstName = document.getElementById('new-first-name').value.trim();
+    const lastName = document.getElementById('new-last-name').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+
+    if (!firstName || !lastName) {
+      alert('Nombre y apellido son obligatorios.');
+      return;
+    }
+
+    if (members.length >= 6) {
+      alert('Máximo 6 miembros por equipo.');
+      return;
+    }
+
+    members.push({
+      type: 'new',
+      first_name: firstName,
+      last_name: lastName,
+      email: email || null,
+      name: firstName + ' ' + lastName,
+      is_leader: false
+    });
+
+    // Clear inputs
+    document.getElementById('new-first-name').value = '';
+    document.getElementById('new-last-name').value = '';
+    document.getElementById('new-email').value = '';
+
+    renderMembers();
+  };
+
+  // Render members
+  function renderMembers() {
+    if (members.length === 0) {
+      selectedMembers.innerHTML = '';
+      emptyState.classList.remove('hidden');
+    } else {
+      emptyState.classList.add('hidden');
+      selectedMembers.innerHTML = members.map(function(member, index) {
+        const isLeader = member.is_leader;
+        const isNew = member.type === 'new';
+        const initials = member.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+        const badge = isNew ?
+          '<span class="text-xs px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400">Nuevo</span>' :
+          '<span class="text-xs px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400">Registrado</span>';
+
+        return '<div class="flex items-center gap-3 p-3 rounded-xl border transition-all ' + (isLeader ? 'bg-amber-500/5 border-amber-500/30' : 'bg-gray-800/30 border-gray-700/50') + '">' +
+          '<div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ' + (isLeader ? 'bg-gradient-to-br from-amber-400/30 to-orange-400/30 text-amber-300' : 'bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 text-violet-300') + '">' + initials + '</div>' +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="flex items-center gap-2">' +
+              '<p class="text-sm font-medium truncate ' + (isLeader ? 'text-amber-200' : 'text-gray-200') + '">' + member.name + '</p>' +
+              badge +
+            '</div>' +
+            '<p class="text-xs text-gray-500 truncate">' + (member.email || 'Sin email') + '</p>' +
+          '</div>' +
+          '<div class="flex items-center gap-1 flex-shrink-0">' +
+            '<button type="button" class="leader-btn px-2 py-1 text-xs rounded-lg transition-all ' + (isLeader ? 'bg-amber-500/20 text-amber-400' : 'bg-gray-700 text-gray-500 hover:text-amber-400 hover:bg-amber-500/10') + '" data-index="' + index + '">' +
+              (isLeader ? '★ Líder' : '☆ Líder') +
+            '</button>' +
+            '<button type="button" class="remove-btn p-1.5 text-gray-600 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10" data-index="' + index + '">' +
+              '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    // Update count
+    memberCount.textContent = members.length + ' de 3-6';
+
+    // Update hidden input
+    membersDataInput.value = JSON.stringify(members);
+
+    // Update submit button state
+    const hasLeader = members.some(m => m.is_leader);
+    const validCount = members.length >= 3 && members.length <= 6;
+    submitBtn.disabled = !(validCount && hasLeader);
+
+    if (validCount && hasLeader) {
+      submitHint.textContent = '✓ Listo para registrar';
+      submitHint.className = 'text-center text-xs text-emerald-400';
+    } else if (members.length > 0 && !hasLeader) {
+      submitHint.textContent = 'Selecciona un líder para tu equipo';
+      submitHint.className = 'text-center text-xs text-amber-400';
+    } else if (members.length > 0 && members.length < 3) {
+      submitHint.textContent = 'Faltan ' + (3 - members.length) + ' miembros más';
+      submitHint.className = 'text-center text-xs text-gray-500';
+    } else {
+      submitHint.textContent = 'Necesitas entre 3 y 6 miembros y un líder para registrar el equipo';
+      submitHint.className = 'text-center text-xs text-gray-600';
+    }
+  }
+
+  // Event delegation for leader/remove buttons
+  selectedMembers.addEventListener('click', function(e) {
+    const leaderBtn = e.target.closest('.leader-btn');
+    if (leaderBtn) {
+      const idx = parseInt(leaderBtn.dataset.index);
+      members.forEach((m, i) => m.is_leader = (i === idx));
+      renderMembers();
+    }
+
+    const removeBtn = e.target.closest('.remove-btn');
+    if (removeBtn) {
+      const idx = parseInt(removeBtn.dataset.index);
+      members.splice(idx, 1);
+      renderMembers();
+    }
+  });
+
+  // Close search results when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.add('hidden');
+    }
+  });
+});
+</script>

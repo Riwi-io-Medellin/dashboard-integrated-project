@@ -1,14 +1,50 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Admin namespace (admin + team_leader only)
+  namespace :admin do
+    get "dashboard", to: "dashboard#index"
+    resources :groups
+    resources :coders, only: [ :index ] do
+      collection do
+        post :import
+      end
+    end
+    resources :teams, only: [ :index, :show, :new, :create ] do
+      member do
+        get :qr
+      end
+    end
+  end
+
+  # Portal namespace (coder users)
+  namespace :portal do
+    get "dashboard", to: "dashboard#index"
+    resources :teams, only: [ :new, :create, :show, :edit, :update ]
+  end
+
+  # Public team registration via QR token
+  get "register/:token", to: "team_registrations#new", as: :team_registration
+  post "register/:token", to: "team_registrations#create"
+
+  # API endpoints
+  namespace :api do
+    get "coders/search", to: "coders#search"
+    get "coders/search_safe", to: "coders#search_safe"
+    get "coders/check_team", to: "coders#check_team"
+  end
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # Role-based root paths
+  authenticated :user, ->(u) { u.admin? || u.team_leader? } do
+    root "admin/dashboard#index", as: :admin_root
+  end
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  authenticated :user do
+    root "portal/dashboard#index", as: :portal_root
+  end
+
+  root to: redirect("/users/sign_in")
 end

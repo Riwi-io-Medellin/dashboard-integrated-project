@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+  <head>
+    <title><%= content_for(:title) || "RIWI — Portal Coder" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Portal de Coders RIWI">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/riwi-logo.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <style>
+      body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+      :root {
+        --riwi: #7C3AED;
+        --riwi-light: #8B5CF6;
+        --riwi-dim: rgba(124, 58, 237, 0.12);
+        --riwi-border: rgba(139, 92, 246, 0.25);
+      }
+      .riwi-active {
+        background: var(--riwi-dim);
+        color: #a78bfa;
+        padding-left: calc(0.75rem - 2px);
+        border-left: 2px solid var(--riwi-light);
+      }
+      .riwi-glow { box-shadow: 0 0 60px rgba(124,58,237,0.06); }
+    </style>
+  </head>
+  <body class="h-full bg-zinc-950 text-gray-100">
+    <div class="min-h-full flex">
+
+      <!-- Sidebar (desktop) -->
+      <aside class="hidden lg:flex lg:flex-col lg:w-64 bg-zinc-900 border-r border-violet-900/20 fixed inset-y-0 left-0 z-40 riwi-glow">
+
+        <!-- Logo area -->
+        <div class="flex items-center h-16 px-6 border-b border-violet-900/20">
+          <a href="/portal/dashboard" class="flex items-center gap-3 group">
+            <img src="/riwi-logo.png" alt="RIWI"
+                 class="h-8 w-auto brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity duration-200"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <span style="display:none" class="text-lg font-bold text-violet-400">RIWI</span>
+            <span class="text-sm font-semibold text-gray-500 tracking-wide">Proyectos Integradores</span>
+          </a>
+        </div>
+
+        <!-- Nav links -->
+        <nav class="flex-1 px-3 py-6 space-y-0.5 overflow-y-auto">
+          <p class="px-3 mb-3 text-[10px] font-semibold uppercase tracking-widest text-gray-700">Mi Portal</p>
+
+          <%= link_to portal_dashboard_path,
+              class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 #{request.path == portal_dashboard_path ? 'riwi-active' : 'text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]'}" do %>
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Dashboard
+          <% end %>
+
+          <%= link_to new_portal_team_path,
+              class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 #{request.path == new_portal_team_path ? 'riwi-active' : 'text-gray-500 hover:text-gray-200 hover:bg-white/[0.04]'}" do %>
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            Crear Equipo
+          <% end %>
+        </nav>
+
+        <!-- User footer -->
+        <div class="px-3 py-4 border-t border-violet-900/20">
+          <div class="flex items-center gap-3 px-3 py-2">
+            <div class="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
+                 style="background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%);">
+              <%= current_user.email[0].upcase %>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-300 truncate"><%= current_user.email %></p>
+              <p class="text-[11px] text-gray-600">Coder</p>
+            </div>
+          </div>
+          <%= link_to destroy_user_session_path,
+              data: { turbo_method: :delete },
+              class: "flex items-center gap-2 px-3 py-2 mt-0.5 text-xs text-gray-600 hover:text-red-400 rounded-lg hover:bg-white/[0.04] transition-colors" do %>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Cerrar Sesión
+          <% end %>
+        </div>
+      </aside>
+
+      <!-- Mobile top bar -->
+      <div class="lg:hidden fixed top-0 inset-x-0 z-40 bg-zinc-900/95 backdrop-blur-md border-b border-violet-900/20">
+        <div class="flex items-center justify-between h-14 px-4">
+          <img src="/riwi-logo.png" alt="RIWI"
+               class="h-7 w-auto brightness-0 invert opacity-80"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+          <span style="display:none" class="text-base font-bold text-violet-400">RIWI</span>
+          <button id="mobile-menu-btn" class="p-2 text-gray-500 hover:text-gray-200 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile slide-over -->
+      <div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden">
+        <div class="absolute inset-0 bg-zinc-950/70 backdrop-blur-sm" id="mobile-menu-overlay"></div>
+        <div class="absolute inset-y-0 left-0 w-64 bg-zinc-900 border-r border-violet-900/20 shadow-2xl flex flex-col">
+          <div class="flex items-center justify-between h-14 px-5 border-b border-violet-900/20">
+            <img src="/riwi-logo.png" alt="RIWI" class="h-7 w-auto brightness-0 invert opacity-80">
+            <button id="close-menu-btn" class="p-2 text-gray-500 hover:text-gray-200">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <nav class="flex-1 p-4 space-y-1">
+            <%= link_to "Dashboard", portal_dashboard_path,
+                class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors" %>
+            <%= link_to "Crear Equipo", new_portal_team_path,
+                class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-colors" %>
+          </nav>
+          <div class="p-4 border-t border-violet-900/20">
+            <%= link_to "Cerrar Sesión", destroy_user_session_path,
+                data: { turbo_method: :delete },
+                class: "flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm text-red-400 hover:bg-white/5 transition-colors" %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page content -->
+      <main class="flex-1 lg:ml-64 pt-14 lg:pt-0 min-h-screen">
+
+        <!-- Flash notices -->
+        <% if notice %>
+          <div class="mx-4 mt-4 lg:mx-8 lg:mt-5 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-3">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <%= notice %>
+          </div>
+        <% end %>
+
+        <% if alert %>
+          <div class="mx-4 mt-4 lg:mx-8 lg:mt-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center gap-3">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <%= alert %>
+          </div>
+        <% end %>
+
+        <div class="p-4 lg:p-8">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function() {
+        var btn = document.getElementById('mobile-menu-btn');
+        var closeBtn = document.getElementById('close-menu-btn');
+        var menu = document.getElementById('mobile-menu');
+        var overlay = document.getElementById('mobile-menu-overlay');
+        function open() { menu && menu.classList.remove('hidden'); }
+        function close() { menu && menu.classList.add('hidden'); }
+        if (btn) btn.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        if (overlay) overlay.addEventListener('click', close);
+        document.addEventListener('turbo:load', function() {
+          var btn2 = document.getElementById('mobile-menu-btn');
+          if (btn2 && !btn2._init) { btn2._init = true; btn2.addEventListener('click', open); }
+        });
+      })();
+    </script>
+  </body>
+</html>
+P Por

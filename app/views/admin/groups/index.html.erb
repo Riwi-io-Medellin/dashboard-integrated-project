@@ -1,0 +1,76 @@
+<% content_for(:title, "Grupos — RIWI") %>
+
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h1 class="text-2xl lg:text-3xl font-bold text-white">Grupos</h1>
+    <p class="text-gray-500 mt-1">Gestiona los grupos de formación</p>
+  </div>
+  <%= link_to new_admin_group_path, class: "inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25" do %>
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nuevo Grupo
+  <% end %>
+</div>
+
+<div class="bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden">
+  <table class="w-full">
+    <thead>
+      <tr class="border-b border-gray-800">
+        <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
+        <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Coders</th>
+        <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Equipos</th>
+        <th class="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-800/50">
+      <% @groups.each do |group| %>
+        <tr class="hover:bg-gray-800/30 transition-colors">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-sm font-bold text-violet-400">
+                <%= group.name[0..1].upcase %>
+              </div>
+              <span class="text-sm font-medium text-gray-200"><%= group.name %></span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span class="text-sm text-gray-400"><%= group.coders_count %></span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span class="text-sm text-gray-400"><%= group.teams_count %></span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <%= link_to admin_group_path(group), class: "p-2 text-gray-500 hover:text-violet-400 transition-colors rounded-lg hover:bg-gray-800" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              <% end %>
+              <%= link_to edit_admin_group_path(group), class: "p-2 text-gray-500 hover:text-amber-400 transition-colors rounded-lg hover:bg-gray-800" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              <% end %>
+              <%= link_to admin_group_path(group), data: { turbo_method: :delete, turbo_confirm: "¿Estás seguro de eliminar este grupo?" }, class: "p-2 text-gray-500 hover:text-red-400 transition-colors rounded-lg hover:bg-gray-800" do %>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @groups.empty? %>
+    <div class="text-center py-12 text-gray-500">
+      <svg class="w-12 h-12 mx-auto mb-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+      </svg>
+      <p class="text-sm">No hay grupos registrados aún.</p>
+    </div>
+  <% end %>
+</div>

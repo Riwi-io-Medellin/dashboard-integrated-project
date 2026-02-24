@@ -1,0 +1,41 @@
+<% content_for(:title, "Nuevo Equipo — RIWI") %>
+
+<div class="max-w-lg">
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-white">Nuevo Equipo</h1>
+    <p class="text-gray-500 mt-1">Crea un equipo para un proyecto integrado</p>
+  </div>
+
+  <%= form_with(model: [:admin, @team], class: "space-y-6") do |f| %>
+    <% if @team.errors.any? %>
+      <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <p class="font-medium mb-2">Se encontraron errores:</p>
+        <ul class="list-disc list-inside space-y-1">
+          <% @team.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :name, "Nombre del equipo", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.text_field :name, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600", placeholder: "Ej: Los Innovadores" %>
+    </div>
+
+    <div>
+      <%= f.label :group_id, "Grupo", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.collection_select :group_id, @groups, :id, :name, { prompt: "Selecciona un grupo" }, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all" %>
+    </div>
+
+    <div>
+      <%= f.label :project_category, "Categoría del proyecto", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.select :project_category, Team::CATEGORY_LABELS.map { |k, v| [v, k] }, { prompt: "Selecciona una categoría" }, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all" %>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= f.submit "Crear Equipo", class: "px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25 cursor-pointer" %>
+      <%= link_to "Cancelar", admin_teams_path, class: "px-6 py-3 text-sm text-gray-400 hover:text-gray-200 transition-colors" %>
+    </div>
+  <% end %>
+</div>
