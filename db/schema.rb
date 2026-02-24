@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_24_172909) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_24_222848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -25,6 +25,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_24_172909) do
     t.bigint "group_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "github_user"
+    t.string "discord_user"
     t.index ["email"], name: "index_coders_on_email"
     t.index ["group_id"], name: "index_coders_on_group_id"
     t.index ["student_id"], name: "index_coders_on_student_id", unique: true

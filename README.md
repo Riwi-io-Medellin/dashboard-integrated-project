@@ -1,6 +1,12 @@
 # RIWI Dashboard — Proyectos Integrados
 
-Aplicación oficial para la gestión de Proyectos Integrados en RIWI. Permite a los coders registrar sus equipos mediante códigos QR y a los administradores gestionar grupos, coders y equipos.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
+Aplicación de código abierto para la gestión de Proyectos Integrados en RIWI. Permite a los coders registrar sus equipos mediante códigos QR y a los administradores gestionar grupos, coders y equipos.
+
+## Características de Código Abierto
+
+Este proyecto se distribuye bajo la licencia MIT, lo que significa que puedes usarlo, modificarlo y distribuirlo libremente. Invitamos a la comunidad a contribuir, reportar problemas (issues) y proponer mejoras (pull requests) para seguir evolucionando la plataforma.
 
 ## Cómo Correr el Proyecto (Docker)
 
@@ -96,3 +102,20 @@ El sistema viene con usuarios pre-cargados para pruebas:
   - **Autocompletado**: Busca compañeros ya registrados en la base de datos.
   - **Manual**: Agrega compañeros nuevos que aún no están en el sistema.
 - Selección de Líder y validación de reglas (3-6 miembros).
+
+---
+
+## Contribuir
+
+¡Las contribuciones son bienvenidas! Si deseas aportar al proyecto, por favor:
+1. Haz un fork del repositorio.
+2. Crea una rama para tu feature o fix (`git checkout -b feature/nueva-mejora`).
+3. Haz commit de tus cambios (`git commit -m 'Agrega nueva mejora'`).
+4. Sube tus cambios a tu rama (`git push origin feature/nueva-mejora`).
+5. Abre un Pull Request.
+
+Asegúrate de ejecutar las pruebas y linter (ej: `rubocop`) antes de enviar tu PR.
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT - mira el archivo [LICENSE](LICENSE) para más detalles.

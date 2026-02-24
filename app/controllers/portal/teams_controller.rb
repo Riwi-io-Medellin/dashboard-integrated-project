@@ -155,18 +155,21 @@ module Portal
 
       if members.size < 3
         flash.now[:alert] = "El equipo debe tener al menos 3 miembros."
+        @submitted_members = params[:members_data]
         setup_edit_ivars
         render :edit, status: :unprocessable_entity and return
       end
 
       if members.size > 6
         flash.now[:alert] = "El equipo no puede tener más de 6 miembros."
+        @submitted_members = params[:members_data]
         setup_edit_ivars
         render :edit, status: :unprocessable_entity and return
       end
 
       unless members.any? { |m| m["is_leader"] == true }
         flash.now[:alert] = "Debes seleccionar un líder del equipo."
+        @submitted_members = params[:members_data]
         setup_edit_ivars
         render :edit, status: :unprocessable_entity and return
       end
@@ -174,6 +177,7 @@ module Portal
       group = Group.find_by(id: params[:group_id])
       unless group
         flash.now[:alert] = "Selecciona un clan válido."
+        @submitted_members = params[:members_data]
         setup_edit_ivars
         render :edit, status: :unprocessable_entity and return
       end
@@ -199,10 +203,12 @@ module Portal
     rescue ActiveRecord::RecordInvalid => e
       msg = e.record.errors.full_messages.first.presence || e.message
       flash.now[:alert] = "No se pudo actualizar el equipo: #{msg}"
+      @submitted_members = params[:members_data]
       setup_edit_ivars
       render :edit, status: :unprocessable_entity
     rescue StandardError => e
       flash.now[:alert] = "Error inesperado: #{e.message}"
+      @submitted_members = params[:members_data]
       setup_edit_ivars
       render :edit, status: :unprocessable_entity
     end
@@ -232,6 +238,8 @@ module Portal
             last_name: member_data["last_name"].to_s.strip,
             email: email,
             national_id: national_id,
+            github_user: member_data["github_user"].to_s.strip,
+            discord_user: member_data["discord_user"].to_s.strip,
             group: group
           )
         end

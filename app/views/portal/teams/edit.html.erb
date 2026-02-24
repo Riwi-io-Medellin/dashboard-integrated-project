@@ -91,7 +91,7 @@
               <input type="text" id="new-last-name" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="Pérez">
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-3 mt-3">
             <div>
               <label class="block text-xs text-gray-400 mb-1">No. de documento</label>
               <input type="tel" id="new-national-id" inputmode="numeric" pattern="[0-9]*" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="Ej: 1020304050">
@@ -99,6 +99,16 @@
             <div>
               <label class="block text-xs text-gray-400 mb-1">Correo Electrónico *</label>
               <input type="email" id="new-email" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="juan.perez@ejemplo.com">
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Usuario de GitHub *</label>
+              <input type="text" id="new-github" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="octocat">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Usuario de Discord</label>
+              <input type="text" id="new-discord" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="gabo98">
             </div>
           </div>
           <button type="button" id="btn-add-new" class="w-full py-2.5 bg-emerald-500/10 text-emerald-400 text-xs font-medium rounded-lg border border-emerald-500/20 hover:bg-emerald-500/20 transition-all">
@@ -131,6 +141,7 @@
 
 <script>
 (function() {
+  var SUBMITTED_MEMBERS = '<%= @submitted_members.to_s.gsub("'", "\\'") %>';
   var INITIAL_MEMBERS = <%= raw @members.map { |tm|
     {
       type: 'existing',
@@ -140,6 +151,8 @@
       name: tm.coder.full_name,
       email: tm.coder.email.to_s,
       national_id: tm.coder.national_id.to_s,
+      github_user: tm.coder.github_user.to_s,
+      discord_user: tm.coder.discord_user.to_s,
       group: tm.coder.group&.name || '',
       is_leader: tm.role == 'leader'
     }
@@ -161,6 +174,8 @@
     var inputLastName = document.getElementById('new-last-name');
     var inputEmail = document.getElementById('new-email');
     var inputNationalId = document.getElementById('new-national-id');
+    var inputGithub = document.getElementById('new-github');
+    var inputDiscord = document.getElementById('new-discord');
     var errorContainer = document.getElementById('new-member-error');
     var errorText = document.getElementById('new-member-error-text');
 
@@ -169,7 +184,7 @@
     }
     function hideError() { errorContainer && errorContainer.classList.add('hidden'); }
     function resetBorders() {
-      [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+      [inputFirstName, inputLastName, inputEmail, inputNationalId, inputGithub, inputDiscord].forEach(function(el) {
         if (el) { el.classList.remove('border-red-500'); el.classList.add('border-gray-700'); }
       });
     }
@@ -177,7 +192,7 @@
       if (el) { el.classList.remove('border-gray-700'); el.classList.add('border-red-500'); }
     }
 
-    [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+    [inputFirstName, inputLastName, inputEmail, inputNationalId, inputGithub, inputDiscord].forEach(function(el) {
       if (el) el.addEventListener('input', function() { hideError(); resetBorders(); });
     });
 
@@ -186,9 +201,15 @@
       this.value = this.value.replace(/[^0-9]/g, '');
     });
 
-    // Load existing members from JS variable (avoids HTML-encoding issues)
+    // Load submitted or existing members
     try {
-      if (Array.isArray(INITIAL_MEMBERS) && INITIAL_MEMBERS.length > 0) {
+      if (SUBMITTED_MEMBERS && SUBMITTED_MEMBERS.trim() !== '' && SUBMITTED_MEMBERS !== 'null' && SUBMITTED_MEMBERS !== '[]') {
+        var restored = JSON.parse(SUBMITTED_MEMBERS);
+        if (Array.isArray(restored) && restored.length > 0) {
+          members = restored;
+          renderMembers();
+        }
+      } else if (Array.isArray(INITIAL_MEMBERS) && INITIAL_MEMBERS.length > 0) {
         members = INITIAL_MEMBERS;
         renderMembers();
       }
@@ -201,6 +222,8 @@
       var lastName = inputLastName.value.trim();
       var email = inputEmail.value.trim();
       var nationalId = inputNationalId.value.trim();
+      var github = inputGithub.value.trim();
+      var discord = inputDiscord.value.trim();
 
       if (!firstName) { showError('El nombre es obligatorio.'); highlightError(inputFirstName); return; }
       if (!lastName) { showError('El apellido es obligatorio.'); highlightError(inputLastName); return; }
@@ -208,6 +231,7 @@
       if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
         showError('Ingresa un correo electrónico válido.'); highlightError(inputEmail); return;
       }
+      if (!github) { showError('El usuario de GitHub es obligatorio.'); highlightError(inputGithub); return; }
       if (members.find(function(m) { return m.email && m.email.toLowerCase() === email.toLowerCase(); })) {
         showError('Ya hay un miembro con ese correo.'); highlightError(inputEmail); return;
       }
@@ -225,8 +249,8 @@
           btnAddNew.textContent = '+ Agregar Persona'; btnAddNew.disabled = false;
           if (data.in_team) { showError((data.coder_name || 'Esta persona') + ' ya pertenece a otro equipo.'); highlightError(inputEmail); return; }
           var groupName = (function() { var s = document.getElementById('team-group-id'); var o = s && s.options[s.selectedIndex]; return o && o.dataset.name ? o.dataset.name : ''; })();
-          members.push({ type: 'new', first_name: firstName, last_name: lastName, name: firstName + ' ' + lastName, email: email, national_id: nationalId, group: groupName || 'Sin clan', is_leader: false });
-          inputFirstName.value = ''; inputLastName.value = ''; inputEmail.value = ''; inputNationalId.value = '';
+          members.push({ type: 'new', first_name: firstName, last_name: lastName, name: firstName + ' ' + lastName, email: email, national_id: nationalId, github_user: github, discord_user: discord, group: groupName || 'Sin clan', is_leader: false });
+          inputFirstName.value = ''; inputLastName.value = ''; inputEmail.value = ''; inputNationalId.value = ''; inputGithub.value = ''; inputDiscord.value = '';
           renderMembers();
         })
         .catch(function() { btnAddNew.textContent = '+ Agregar Persona'; btnAddNew.disabled = false; });
@@ -262,7 +286,7 @@
       selectedMembers.innerHTML = members.map(function(m, i) {
         var isLeader = m.is_leader;
         var initials = m.name.split(' ').map(function(n) { return n[0]; }).slice(0,2).join('').toUpperCase();
-        var sub = (m.group ? 'Clan: ' + m.group : '') + (m.email ? ' • ' + m.email : '') + (m.national_id ? ' • Doc: ' + m.national_id : '');
+        var sub = (m.group ? 'Clan: ' + m.group : '') + (m.email ? ' • ' + m.email : '') + (m.national_id ? ' • Doc: ' + m.national_id : '') + (m.github_user ? ' • GH: ' + m.github_user : '');
         return '<div class="flex items-center gap-3 p-3 rounded-xl border transition-all ' + (isLeader ? 'bg-amber-500/5 border-amber-500/30' : 'bg-gray-800/30 border-gray-700/50') + '">'
           + '<div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ' + (isLeader ? 'bg-gradient-to-br from-amber-400/30 to-orange-400/30 text-amber-300' : 'bg-gradient-to-br from-cyan-500/20 to-blue-500/20 text-cyan-300') + '">' + initials + '</div>'
           + '<div class="flex-1 min-w-0">'

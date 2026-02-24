@@ -99,6 +99,17 @@
               <input type="email" id="new-email" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="juan.perez@ejemplo.com">
             </div>
           </div>
+          
+          <div class="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Usuario de GitHub *</label>
+              <input type="text" id="new-github" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="octocat">
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Usuario de Discord</label>
+              <input type="text" id="new-discord" class="w-full px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 transition-all placeholder-gray-600" placeholder="gabo98">
+            </div>
+          </div>
 
           <div>
             <label class="block text-xs text-gray-400 mb-1">Clan</label>
@@ -169,6 +180,8 @@
     var inputLastName = document.getElementById('new-last-name');
     var inputEmail = document.getElementById('new-email');
     var inputNationalId = document.getElementById('new-national-id');
+    var inputGithub = document.getElementById('new-github');
+    var inputDiscord = document.getElementById('new-discord');
     var inputGroup = document.getElementById('new-member-group');
     var errorContainer = document.getElementById('new-member-error');
     var errorText = document.getElementById('new-member-error-text');
@@ -195,7 +208,7 @@
     
     // Helper to reset borders
     function resetBorders() {
-      [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+      [inputFirstName, inputLastName, inputEmail, inputNationalId, inputGithub, inputDiscord].forEach(function(el) {
         if(el) el.classList.remove('border-red-500', 'focus:ring-red-500');
         if(el) el.classList.add('border-gray-700', 'focus:ring-cyan-500/50');
       });
@@ -209,7 +222,7 @@
     }
 
     // Clear error on input
-    [inputFirstName, inputLastName, inputEmail, inputNationalId].forEach(function(el) {
+    [inputFirstName, inputLastName, inputEmail, inputNationalId, inputGithub, inputDiscord].forEach(function(el) {
       if (el) {
         el.addEventListener('input', function() {
           hideError();
@@ -250,6 +263,8 @@
       var lastName = inputLastName.value.trim();
       var email = inputEmail.value.trim();
       var nationalId = inputNationalId.value.trim();
+      var github = inputGithub.value.trim();
+      var discord = inputDiscord.value.trim();
       var groupName = inputGroup.value;
 
       // Validations
@@ -275,6 +290,12 @@
       if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(email)) {
         showError('Ingresa un correo electrónico válido (solo letras, números y símbolos estándar).');
         highlightError(inputEmail);
+        return;
+      }
+
+      if (!github) {
+        showError('El usuario de GitHub es obligatorio.');
+        highlightError(inputGithub);
         return;
       }
 
@@ -342,6 +363,8 @@
             name: firstName + ' ' + lastName,
             email: email,
             national_id: nationalId,
+            github_user: github,
+            discord_user: discord,
             group: groupName || 'Sin clan',
             is_leader: false
           });
@@ -351,6 +374,8 @@
           inputLastName.value = '';
           inputEmail.value = '';
           inputNationalId.value = '';
+          inputGithub.value = '';
+          inputDiscord.value = '';
           inputGroup.selectedIndex = 0;
 
           renderMembers();
@@ -381,6 +406,9 @@
           }
           if (member.national_id) {
             subtitle += ' • Doc: ' + member.national_id;
+          }
+          if (member.github_user) {
+            subtitle += ' • GH: ' + member.github_user;
           }
 
           return '<div class="flex items-center gap-3 p-3 rounded-xl border transition-all ' + (isLeader ? 'bg-amber-500/5 border-amber-500/30' : 'bg-gray-800/30 border-gray-700/50') + '">' +
