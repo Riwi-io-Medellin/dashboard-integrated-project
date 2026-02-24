@@ -37,10 +37,7 @@ gem "rubyzip", "~> 2.3"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
-gem "solid_cache"
-gem "solid_queue"
-gem "solid_cable"
+# solid_cache, solid_queue, solid_cable removed — not compatible with single-DB Railway setup
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
