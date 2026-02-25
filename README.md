@@ -1,8 +1,8 @@
-# RIWI Dashboard — Proyectos Integrados
+# RIWI Dashboard — Proyectos integradores
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-Aplicación de código abierto para la gestión de Proyectos Integrados en RIWI. Permite a los coders registrar sus equipos mediante códigos QR y a los administradores gestionar grupos, coders y equipos.
+Aplicación de código abierto para la gestión de Proyectos integradores en RIWI. Permite a los coders registrar sus equipos mediante códigos QR y a los administradores gestionar grupos, coders y equipos.
 
 ## Características de Código Abierto
 
