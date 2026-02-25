@@ -88,6 +88,7 @@ module Portal
       ActiveRecord::Base.transaction do
         @team = Team.create!(
           name: team_name,
+          description: params[:description].to_s.strip.presence,
           project_category: project_category,
           group: group,
           needs_openai_api: params[:needs_openai_api] == "1",
@@ -185,6 +186,7 @@ module Portal
       ActiveRecord::Base.transaction do
         @team.update!(
           name: params[:team_name].to_s.strip,
+          description: params[:description].to_s.strip.presence,
           project_category: params[:project_category].to_s.strip,
           group: group,
           needs_openai_api: params[:needs_openai_api] == "1"
