@@ -147,7 +147,7 @@ class UserTest < ActiveSupport::TestCase
       national_id: "123456789",
       group: group
     )
-    
+
     user = User.create!(
       email: "test@example.com",
       password: "Password123!",
@@ -155,7 +155,7 @@ class UserTest < ActiveSupport::TestCase
       role: "coder",
       document_number: "123456789"
     )
-    
+
     assert_equal coder, user.coder
   end
 
@@ -167,7 +167,7 @@ class UserTest < ActiveSupport::TestCase
       email: "test@example.com",
       group: group
     )
-    
+
     user = User.create!(
       email: "test@example.com",
       password: "Password123!",
@@ -175,7 +175,7 @@ class UserTest < ActiveSupport::TestCase
       role: "coder",
       document_number: "123456789"
     )
-    
+
     assert_equal coder, user.coder
   end
 

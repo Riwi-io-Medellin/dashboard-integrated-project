@@ -62,7 +62,7 @@ class TeamTest < ActiveSupport::TestCase
       project_category: "technology",
       group: @group
     )
-    
+
     team2 = Team.new(
       name: "Team 2",
       project_category: "education",
@@ -108,7 +108,7 @@ class TeamTest < ActiveSupport::TestCase
     )
     coder = Coder.create!(first_name: "John", last_name: "Doe", group: @group)
     TeamMember.create!(team: team, coder: coder, role: "member")
-    
+
     assert_difference "TeamMember.count", -1 do
       team.destroy
     end
@@ -120,12 +120,12 @@ class TeamTest < ActiveSupport::TestCase
       project_category: "technology",
       group: @group
     )
-    
+
     2.times do |i|
       coder = Coder.create!(first_name: "Coder", last_name: "#{i}", group: @group)
       TeamMember.create!(team: team, coder: coder, role: "member")
     end
-    
+
     assert_not team.valid?(:registration)
     assert_includes team.errors[:base], "El equipo debe tener al menos 3 miembros"
   end
@@ -136,12 +136,12 @@ class TeamTest < ActiveSupport::TestCase
       project_category: "technology",
       group: @group
     )
-    
+
     3.times do |i|
       coder = Coder.create!(first_name: "Coder", last_name: "#{i}", group: @group)
       TeamMember.create!(team: team, coder: coder, role: "member")
     end
-    
+
     assert team.valid?(:registration)
   end
 
@@ -151,12 +151,12 @@ class TeamTest < ActiveSupport::TestCase
       project_category: "technology",
       group: @group
     )
-    
+
     7.times do |i|
       coder = Coder.create!(first_name: "Coder", last_name: "#{i}", group: @group)
       TeamMember.create!(team: team, coder: coder, role: "member")
     end
-    
+
     assert_not team.valid?(:registration)
     assert_includes team.errors[:base], "El equipo no puede tener más de 6 miembros"
   end
@@ -169,10 +169,10 @@ class TeamTest < ActiveSupport::TestCase
     )
     leader_coder = Coder.create!(first_name: "Leader", last_name: "Coder", group: @group)
     member_coder = Coder.create!(first_name: "Member", last_name: "Coder", group: @group)
-    
+
     TeamMember.create!(team: team, coder: leader_coder, role: "leader")
     TeamMember.create!(team: team, coder: member_coder, role: "member")
-    
+
     assert_equal leader_coder, team.leader
   end
 

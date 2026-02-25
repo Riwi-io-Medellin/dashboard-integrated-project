@@ -65,13 +65,13 @@ class TeamMemberTest < ActiveSupport::TestCase
 
   test "should require unique coder_id" do
     TeamMember.create!(team: @team, coder: @coder, role: "member")
-    
+
     another_team = Team.create!(
       name: "Another Team",
       project_category: "education",
       group: @group
     )
-    
+
     duplicate = TeamMember.new(
       team: another_team,
       coder: @coder,

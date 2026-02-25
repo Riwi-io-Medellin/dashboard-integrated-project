@@ -36,7 +36,7 @@ class GroupTest < ActiveSupport::TestCase
       last_name: "Doe",
       group: group
     )
-    
+
     assert_difference "Coder.count", -1 do
       group.destroy
     end
@@ -49,7 +49,7 @@ class GroupTest < ActiveSupport::TestCase
       project_category: "technology",
       group: group
     )
-    
+
     assert_difference "Team.count", -1 do
       group.destroy
     end

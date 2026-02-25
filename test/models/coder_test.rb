@@ -55,7 +55,7 @@ class CoderTest < ActiveSupport::TestCase
       student_id: "12345",
       group: @group
     )
-    
+
     duplicate = Coder.new(
       first_name: "Jane",
       last_name: "Smith",
@@ -91,7 +91,7 @@ class CoderTest < ActiveSupport::TestCase
     )
     coder = Coder.create!(first_name: "John", last_name: "Doe", group: @group)
     TeamMember.create!(team: team, coder: coder, role: "member")
-    
+
     assert coder.assigned_to_team?
   end
 
@@ -108,7 +108,7 @@ class CoderTest < ActiveSupport::TestCase
     )
     coder = Coder.create!(first_name: "John", last_name: "Doe", group: @group)
     TeamMember.create!(team: team, coder: coder, role: "member")
-    
+
     assert_equal team, coder.team
   end
 
@@ -120,14 +120,14 @@ class CoderTest < ActiveSupport::TestCase
       role: "coder",
       document_number: "123456789"
     )
-    
+
     coder = Coder.create!(
       first_name: "John",
       last_name: "Doe",
       national_id: "123456789",
       group: @group
     )
-    
+
     user.reload
     assert_equal coder, user.coder
   end
@@ -140,14 +140,14 @@ class CoderTest < ActiveSupport::TestCase
       role: "coder",
       document_number: "123456789"
     )
-    
+
     coder = Coder.create!(
       first_name: "John",
       last_name: "Doe",
       email: "test@example.com",
       group: @group
     )
-    
+
     user.reload
     assert_equal coder, user.coder
   end
