@@ -24,6 +24,11 @@
     </div>
 
     <div>
+      <%= f.label :description, "Descripción del proyecto (opcional)", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.text_area :description, rows: 3, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600 resize-none", placeholder: "Describe brevemente el proyecto del equipo..." %>
+    </div>
+
+    <div>
       <%= f.label :group_id, "Grupo", class: "block text-sm font-medium text-gray-300 mb-2" %>
       <%= f.collection_select :group_id, @groups, :id, :name, { prompt: "Selecciona un grupo" }, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all" %>
     </div>

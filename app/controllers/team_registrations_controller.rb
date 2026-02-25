@@ -58,6 +58,7 @@ class TeamRegistrationsController < ApplicationController
     # Validate team name and category
     team_name = params[:team_name].to_s.strip
     project_category = params[:project_category].to_s.strip
+    description = params[:description].to_s.strip.presence
 
     if team_name.blank?
       flash.now[:alert] = "El nombre del equipo es obligatorio."
@@ -80,6 +81,7 @@ class TeamRegistrationsController < ApplicationController
 
       @team.update!(
         name: team_name,
+        description: description,
         project_category: project_category,
         registered_at: Time.current
       )

@@ -37,7 +37,7 @@ module Admin
     private
 
     def team_params
-      params.require(:team).permit(:name, :project_category, :group_id)
+      params.require(:team).permit(:name, :description, :project_category, :group_id)
     end
   end
 end
