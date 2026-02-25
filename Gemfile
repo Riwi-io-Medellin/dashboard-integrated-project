@@ -71,4 +71,10 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+  
+  # Code coverage
+  gem "simplecov", require: false
+  
+  # Fix for Rails 8 compatibility
+  gem "minitest", "~> 5.25"
 end
