@@ -116,8 +116,13 @@
         <% @recent_teams.each do |team| %>
           <div class="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0">
             <div>
-              <p class="text-sm font-medium text-gray-300"><%= team.name %></p>
-              <p class="text-xs text-gray-500"><%= team.group.name %> · <%= team.category_label %></p>
+              <div class="flex items-center gap-2">
+                <p class="text-sm font-medium text-gray-300"><%= team.name %></p>
+                <% if team.group.jornada.present? %>
+                  <span class="text-[10px] uppercase font-semibold text-gray-400 bg-gray-800 px-1.5 py-0.5 rounded-md"><%= team.group.jornada %></span>
+                <% end %>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5"><%= team.group.name %> · <%= team.category_label %></p>
             </div>
             <div class="flex items-center gap-2">
               <span class="text-xs px-2 py-1 rounded-full <%= team.registered_at ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400' %>">
