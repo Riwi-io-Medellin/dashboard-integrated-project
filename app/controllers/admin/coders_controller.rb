@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "csv"
+
 # Controller for listing coders and importing from Excel
 module Admin
   class CodersController < BaseController
@@ -18,6 +20,40 @@ module Admin
       end
 
       @groups = Group.order(:name)
+    end
+
+    def export
+      @coders = Coder.includes(:group, team_member: :team).order(:last_name, :first_name)
+
+      csv_data = CSV.generate(headers: true, col_sep: ",") do |csv|
+        csv << [
+          "Nombre", "Apellido", "Email", "Teléfono", "Documento",
+          "ID Estudiante", "Género", "Grupo", "GitHub", "Discord",
+          "Equipo", "Rol en Equipo"
+        ]
+
+        @coders.each do |coder|
+          csv << [
+            coder.first_name,
+            coder.last_name,
+            coder.email,
+            coder.phone,
+            coder.national_id,
+            coder.student_id,
+            coder.gender,
+            coder.group&.name,
+            coder.github_user,
+            coder.discord_user,
+            coder.team&.name,
+            coder.team_member&.role
+          ]
+        end
+      end
+
+      send_data csv_data,
+                filename: "coders-riwi-#{Date.today}.csv",
+                type: "text/csv; charset=utf-8",
+                disposition: "attachment"
     end
 
     def import

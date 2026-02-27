@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :coders, only: [ :index ] do
       collection do
         post :import
+        get :export
       end
     end
     resources :teams, only: [ :index, :show, :new, :create, :destroy ] do
