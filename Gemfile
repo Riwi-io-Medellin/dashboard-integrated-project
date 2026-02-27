@@ -26,7 +26,7 @@ gem "devise", "~> 4.9"
 gem "redis", "~> 5.0"
 
 # QR Code generation
-gem "rqrcode", "~> 2.0"
+gem "rqrcode", "~> 3.2"
 
 # Excel file parsing
 gem "roo", "~> 2.10"
