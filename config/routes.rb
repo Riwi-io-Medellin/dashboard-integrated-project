@@ -11,8 +11,12 @@ Rails.application.routes.draw do
       end
     end
     resources :teams, only: [ :index, :show, :new, :create ] do
+      collection do
+        post :create_multiple_github_repos
+      end
       member do
         get :qr
+        post :create_github_repo
       end
     end
   end

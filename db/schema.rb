@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_24_222848) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_26_182053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -61,6 +61,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_24_222848) do
     t.datetime "updated_at", null: false
     t.boolean "needs_openai_api", default: false, null: false
     t.bigint "created_by_user_id"
+    t.text "description"
+    t.string "github_repo_url"
     t.index ["created_by_user_id"], name: "index_teams_on_created_by_user_id"
     t.index ["group_id"], name: "index_teams_on_group_id"
     t.index ["token"], name: "index_teams_on_token", unique: true

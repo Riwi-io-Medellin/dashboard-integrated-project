@@ -34,10 +34,53 @@ module Admin
       @qr_svg = QrGeneratorService.new(registration_url).to_svg
     end
 
+    def create_github_repo
+      @team = Team.find(params[:id])
+      result = GithubTeamRepoService.new(@team).create_repo!
+
+      if result[:success]
+        redirect_to admin_team_path(@team), notice: "Repositorio de GitHub creado exitosamente. Los colaboradores han sido invitados."
+      else
+        redirect_to admin_team_path(@team), alert: result[:error]
+      end
+    end
+
+    def create_multiple_github_repos
+      team_ids = params[:team_ids]
+
+      if team_ids.blank?
+        redirect_to admin_teams_path, alert: "Por favor, selecciona al menos un equipo."
+        return
+      end
+
+      teams = Team.where(id: team_ids)
+      created_count = 0
+      failed_count = 0
+
+      teams.each do |team|
+        result = GithubTeamRepoService.new(team).create_repo!
+        if result[:success]
+          created_count += 1
+        else
+          failed_count += 1
+          Rails.logger.error "Error creando repo masivo para Team #{team.id}: #{result[:error]}"
+        end
+      end
+
+      message = "Se crearon #{created_count} repositorios exitosamente."
+      message += " Fallaron #{failed_count}." if failed_count > 0
+
+      if created_count > 0
+        redirect_to admin_teams_path, notice: message
+      else
+        redirect_to admin_teams_path, alert: message
+      end
+    end
+
     private
 
     def team_params
-      params.require(:team).permit(:name, :description, :project_category, :group_id)
+      params.require(:team).permit(:name, :description, :project_category, :group_id, team_ids: [])
     end
   end
 end

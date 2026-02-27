@@ -78,3 +78,5 @@ group :test do
   # Fix for Rails 8 compatibility
   gem "minitest", "~> 5.25"
 end
+
+gem "octokit", "~> 10.0"
