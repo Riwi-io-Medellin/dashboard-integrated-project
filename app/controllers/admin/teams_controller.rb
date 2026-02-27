@@ -28,6 +28,12 @@ module Admin
       end
     end
 
+    def destroy
+      @team = Team.find(params[:id])
+      @team.destroy
+      redirect_to admin_teams_path, notice: "Equipo eliminado exitosamente."
+    end
+
     def qr
       @team = Team.find(params[:id])
       registration_url = team_registration_url(token: @team.token)

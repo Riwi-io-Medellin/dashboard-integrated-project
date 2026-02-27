@@ -82,8 +82,13 @@
         <%= link_to admin_team_path(team), class: "flex-1 text-center px-3 py-2 text-xs font-medium text-gray-400 hover:text-violet-400 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all" do %>
           Ver Detalle
         <% end %>
-        <%= link_to qr_admin_team_path(team), class: "flex-1 text-center px-3 py-2 text-xs font-medium text-gray-400 hover:text-fuchsia-400 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all" do %>
-          Código QR
+        <%= link_to qr_admin_team_path(team), class: "flex-[0.5] text-center px-3 py-2 text-xs font-medium text-gray-400 hover:text-fuchsia-400 bg-gray-800/50 hover:bg-gray-800 rounded-lg transition-all" do %>
+          QR
+        <% end %>
+        <%= button_to admin_team_path(team), method: :delete, data: { confirm: "¿Estás seguro de eliminar este equipo? Esta acción no se puede deshacer." }, class: "px-3 py-2 text-xs font-medium text-gray-500 hover:text-red-400 bg-gray-800/50 hover:bg-red-500/10 rounded-lg transition-all", title: "Eliminar Equipo" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
         <% end %>
       </div>
     </div>

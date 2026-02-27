@@ -10,7 +10,7 @@ Rails.application.routes.draw do
         post :import
       end
     end
-    resources :teams, only: [ :index, :show, :new, :create ] do
+    resources :teams, only: [ :index, :show, :new, :create, :destroy ] do
       collection do
         post :create_multiple_github_repos
       end
