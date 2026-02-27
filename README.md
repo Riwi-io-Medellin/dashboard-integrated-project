@@ -1,8 +1,6 @@
-# RIWI Dashboard — Proyectos integradores
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-Aplicación de código abierto para la gestión de Proyectos integradores en RIWI. Permite a los coders registrar sus equipos mediante códigos QR y a los administradores gestionar grupos, coders y equipos.
 
 ## Características de Código Abierto
 
@@ -74,34 +72,6 @@ Si agregas una gema al `Gemfile`, debes reconstruir el contenedor:
 docker compose -f docker-compose.dev.yml build
 docker compose -f docker-compose.dev.yml up -d
 ```
-
----
-
-## Credenciales de Acceso
-
-El sistema viene con usuarios pre-cargados para pruebas:
-
-| Rol | Email | Contraseña |
-|-----|-------|------------|
-| **Administrador** | `admin@riwi.io` | `Admin1234!` |
-| **Team Leader** | `leader@riwi.io` | `Leader1234!` |
-
----
-
-## Funcionalidades Principales
-
-### Panel Administrativo
-- Gestión de **Grupos** (Crear, Editar, Eliminar)
-- Gestión de **Coders** (Importación masiva desde Excel)
-- Gestión de **Equipos** (Ver estado, Generar QR)
-- Estadísticas en tiempo real
-
-### Registro Público (Coders)
-- Acceso mediante **Código QR** único por equipo (generado por el admin)
-- Registro híbrido:
-  - **Autocompletado**: Busca compañeros ya registrados en la base de datos.
-  - **Manual**: Agrega compañeros nuevos que aún no están en el sistema.
-- Selección de Líder y validación de reglas (3-6 miembros).
 
 ---
 
