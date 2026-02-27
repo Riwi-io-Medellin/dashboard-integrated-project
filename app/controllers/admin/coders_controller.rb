@@ -56,6 +56,12 @@ module Admin
                 disposition: "attachment"
     end
 
+    def destroy
+      @coder = Coder.find(params[:id])
+      @coder.destroy
+      redirect_back fallback_location: admin_coders_path, notice: "Coder eliminado exitosamente."
+    end
+
     def import
       if params[:file].blank?
         redirect_to admin_coders_path, alert: "Por favor selecciona un archivo Excel (.xlsx)."

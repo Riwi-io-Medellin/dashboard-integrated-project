@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   namespace :admin do
     get "dashboard", to: "dashboard#index"
     resources :groups
-    resources :coders, only: [ :index ] do
+    resources :coders, only: [ :index, :destroy ] do
       collection do
         post :import
         get :export

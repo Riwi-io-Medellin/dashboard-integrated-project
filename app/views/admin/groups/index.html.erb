@@ -18,6 +18,7 @@
     <thead>
       <tr class="border-b border-gray-800">
         <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
+        <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Jornada</th>
         <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Coders</th>
         <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Equipos</th>
         <th class="text-right px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
@@ -25,6 +26,10 @@
     </thead>
     <tbody class="divide-y divide-gray-800/50">
       <% @groups.each do |group| %>
+        <% registered = group.coders_count.to_i %>
+        <% cap = group.capacity.to_i %>
+        <% over = cap > 0 && registered > cap %>
+        <% at_cap = cap > 0 && registered == cap %>
         <tr class="hover:bg-gray-800/30 transition-colors">
           <td class="px-6 py-4">
             <div class="flex items-center gap-3">
@@ -35,7 +40,26 @@
             </div>
           </td>
           <td class="px-6 py-4 text-center">
-            <span class="text-sm text-gray-400"><%= group.coders_count %></span>
+            <% if group.jornada.present? %>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= group.jornada == 'AM' ? 'bg-amber-500/10 text-amber-400' : 'bg-indigo-500/10 text-indigo-400' %>">
+                <%= group.jornada == 'AM' ? '☀️ AM' : '🌙 PM' %>
+              </span>
+            <% else %>
+              <span class="text-xs text-gray-600">—</span>
+            <% end %>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <% if cap > 0 %>
+              <span class="text-sm font-medium <%= over ? 'text-red-400' : at_cap ? 'text-amber-400' : 'text-emerald-400' %>"><%= registered %></span>
+              <span class="text-xs text-gray-600">/ <%= cap %></span>
+              <% if over %>
+                <span class="text-xs text-red-400 ml-1">(+<%= registered - cap %>)</span>
+              <% elsif cap > 0 && registered < cap %>
+                <span class="text-xs text-gray-600 ml-1">(faltan <%= cap - registered %>)</span>
+              <% end %>
+            <% else %>
+              <span class="text-sm text-gray-400"><%= registered %></span>
+            <% end %>
           </td>
           <td class="px-6 py-4 text-center">
             <span class="text-sm text-gray-400"><%= group.teams_count %></span>

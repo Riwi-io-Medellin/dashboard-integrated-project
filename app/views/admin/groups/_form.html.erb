@@ -15,6 +15,17 @@
     <%= f.text_field :name, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600", placeholder: "Ej: Thompson, Turing..." %>
   </div>
 
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :jornada, "Jornada", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.select :jornada, [["AM — Mañana", "AM"], ["PM — Tarde", "PM"]], { include_blank: "Seleccionar jornada", selected: group.jornada }, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all" %>
+    </div>
+    <div>
+      <%= f.label :capacity, "Cupos", class: "block text-sm font-medium text-gray-300 mb-2" %>
+      <%= f.number_field :capacity, class: "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all placeholder-gray-600", placeholder: "Ej: 30", min: 1 %>
+    </div>
+  </div>
+
   <div class="flex items-center gap-3">
     <%= f.submit (group.persisted? ? "Actualizar Grupo" : "Crear Grupo"), class: "px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-sm font-medium rounded-xl transition-all duration-200 shadow-lg shadow-violet-500/25 cursor-pointer" %>
     <%= link_to "Cancelar", admin_groups_path, class: "px-6 py-3 text-sm text-gray-400 hover:text-gray-200 transition-colors" %>
