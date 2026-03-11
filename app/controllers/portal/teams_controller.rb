@@ -68,6 +68,14 @@ module Portal
         return
       end
 
+      if params[:description].to_s.strip.blank?
+        flash.now[:alert] = "La descripción del proyecto es obligatoria."
+        @team = Team.new
+        @groups = Group.order(:name)
+        render :new, status: :unprocessable_entity
+        return
+      end
+
       unless Team::CATEGORIES.include?(project_category)
         flash.now[:alert] = "Selecciona una categoría de proyecto válida."
         @team = Team.new
@@ -115,6 +123,7 @@ module Portal
       @groups = Group.order(:name)
       @submitted_members = params[:members_data]
       @submitted_team_name = params[:team_name]
+      @submitted_description = params[:description]
       @submitted_category = params[:project_category]
       @submitted_group_id = params[:group_id]
       @submitted_openai = params[:needs_openai_api]
@@ -125,6 +134,7 @@ module Portal
       @groups = Group.order(:name)
       @submitted_members = params[:members_data]
       @submitted_team_name = params[:team_name]
+      @submitted_description = params[:description]
       @submitted_category = params[:project_category]
       @submitted_group_id = params[:group_id]
       @submitted_openai = params[:needs_openai_api]
@@ -170,6 +180,13 @@ module Portal
 
       unless members.any? { |m| m["is_leader"] == true }
         flash.now[:alert] = "Debes seleccionar un líder del equipo."
+        @submitted_members = params[:members_data]
+        setup_edit_ivars
+        render :edit, status: :unprocessable_entity and return
+      end
+
+      if params[:description].to_s.strip.blank?
+        flash.now[:alert] = "La descripción del proyecto es obligatoria."
         @submitted_members = params[:members_data]
         setup_edit_ivars
         render :edit, status: :unprocessable_entity and return

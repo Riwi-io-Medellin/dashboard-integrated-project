@@ -13,6 +13,7 @@ module Admin
       @group = Group.create!(name: "Test Group")
       @team = Team.create!(
         name: "Test Team",
+        description: "Test description",
         project_category: "technology",
         group: @group
       )
@@ -29,6 +30,7 @@ module Admin
       other_group = Group.create!(name: "Other Group")
       other_team = Team.create!(
         name: "Other Team",
+        description: "Test description",
         project_category: "education",
         group: other_group
       )
@@ -55,6 +57,7 @@ module Admin
         post admin_teams_url, params: {
           team: {
             name: "New Team",
+            description: "New Description",
             project_category: "education",
             group_id: @group.id
           }

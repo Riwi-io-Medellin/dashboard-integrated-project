@@ -21,6 +21,7 @@ class Team < ApplicationRecord
   }.freeze
 
   validates :name, presence: true
+  validates :description, presence: true
   validates :project_category, inclusion: { in: CATEGORIES }
   validates :token, presence: true, uniqueness: true
 

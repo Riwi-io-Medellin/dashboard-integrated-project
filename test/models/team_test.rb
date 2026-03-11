@@ -7,6 +7,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should be valid with valid attributes" do
     team = Team.new(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -15,18 +16,21 @@ class TeamTest < ActiveSupport::TestCase
   end
 
   test "should require name" do
-    team = Team.new(name: nil, project_category: "technology", group: @group)
+    team = Team.new(
+      description: "Test description", name: nil, project_category: "technology", group: @group)
     assert_not team.valid?
     assert_includes team.errors[:name], "can't be blank"
   end
 
   test "should require project_category" do
-    team = Team.new(name: "Test Team", project_category: nil, group: @group)
+    team = Team.new(
+      description: "Test description", name: "Test Team", project_category: nil, group: @group)
     assert_not team.valid?
   end
 
   test "should validate project_category inclusion" do
     team = Team.new(
+      description: "Test description",
       name: "Test Team",
       project_category: "invalid_category",
       group: @group
@@ -38,6 +42,7 @@ class TeamTest < ActiveSupport::TestCase
   test "should accept valid project categories" do
     Team::CATEGORIES.each do |category|
       team = Team.new(
+      description: "Test description",
         name: "Test Team #{category}",
         project_category: category,
         group: @group
@@ -48,6 +53,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should generate token on create" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -58,12 +64,14 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should require unique token" do
     team1 = Team.create!(
+      description: "Test description",
       name: "Team 1",
       project_category: "technology",
       group: @group
     )
 
     team2 = Team.new(
+      description: "Test description",
       name: "Team 2",
       project_category: "education",
       group: @group,
@@ -75,6 +83,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should belong to group" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -84,6 +93,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should have many team_members" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -93,6 +103,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should have many coders through team_members" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -102,6 +113,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "should destroy dependent team_members when destroyed" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -116,6 +128,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "validate_member_count should fail with less than 3 members" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -132,6 +145,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "validate_member_count should pass with 3 to 6 members" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -147,6 +161,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "validate_member_count should fail with more than 6 members" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -163,6 +178,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "leader should return the team leader coder" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -178,6 +194,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "category_label should return human-readable label" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -187,6 +204,7 @@ class TeamTest < ActiveSupport::TestCase
 
   test "needs_openai_api should default to false" do
     team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group

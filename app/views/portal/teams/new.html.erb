@@ -25,6 +25,12 @@
       <input type="text" name="team_name" id="field-team-name" required class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all placeholder-gray-600" placeholder="Ej: Los Innovadores" value="<%= @submitted_team_name %>">
     </div>
 
+    <!-- Project Description -->
+    <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
+      <label class="block text-sm font-medium text-gray-300 mb-2">Descripción del Proyecto</label>
+      <textarea name="description" id="field-description" required rows="3" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 transition-all placeholder-gray-600 resize-none" placeholder="Describe brevemente de qué trata tu proyecto..."><%= @submitted_description %></textarea>
+    </div>
+
     <!-- Project Category -->
     <div class="bg-gray-900 rounded-2xl border border-gray-800 p-5">
       <label class="block text-sm font-medium text-gray-300 mb-2">Categoría del Proyecto</label>

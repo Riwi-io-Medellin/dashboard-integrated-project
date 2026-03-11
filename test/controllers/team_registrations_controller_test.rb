@@ -4,6 +4,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @group = Group.create!(name: "Test Group")
     @team = Team.create!(
+      description: "Test description",
       name: "Test Team",
       project_category: "technology",
       group: @group
@@ -51,6 +52,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_difference "TeamMember.count", 3 do
         post team_registration_url(token: @team.token), params: {
           team_name: "New Team Name",
+          description: "New Description",
           project_category: "education",
           members_data: members_data.to_json
         }
@@ -85,6 +87,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "Coder.count" do
       post team_registration_url(token: @team.token), params: {
         team_name: "New Team",
+        description: "New Description",
         project_category: "education",
         members_data: members_data.to_json
       }
@@ -107,6 +110,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "Coder.count" do
       post team_registration_url(token: @team.token), params: {
         team_name: "New Team",
+        description: "New Description",
         project_category: "education",
         members_data: members_data.to_json
       }
@@ -143,6 +147,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "Coder.count" do
       post team_registration_url(token: @team.token), params: {
         team_name: "New Team",
+        description: "New Description",
         project_category: "education",
         members_data: members_data.to_json
       }
@@ -179,6 +184,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "Coder.count" do
       post team_registration_url(token: @team.token), params: {
         team_name: "",
+        description: "New Description",
         project_category: "education",
         members_data: members_data.to_json
       }
@@ -215,6 +221,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "Coder.count" do
       post team_registration_url(token: @team.token), params: {
         team_name: "New Team",
+        description: "New Description",
         project_category: "invalid_category",
         members_data: members_data.to_json
       }
@@ -257,6 +264,7 @@ class TeamRegistrationsControllerTest < ActionDispatch::IntegrationTest
       assert_difference "TeamMember.count", 3 do
         post team_registration_url(token: @team.token), params: {
           team_name: "Mixed Team",
+          description: "New Description",
           project_category: "education",
           members_data: members_data.to_json
         }
