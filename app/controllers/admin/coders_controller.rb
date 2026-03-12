@@ -29,7 +29,7 @@ module Admin
         csv << [
           "Nombre", "Apellido", "Email", "Teléfono", "Documento",
           "ID Estudiante", "Género", "Grupo", "GitHub", "Discord",
-          "Equipo", "Rol en Equipo"
+          "Equipo", "Rol en Equipo", "Categoría del Proyecto", "Descripción del Proyecto"
         ]
 
         @coders.each do |coder|
@@ -45,7 +45,9 @@ module Admin
             coder.github_user,
             coder.discord_user,
             coder.team&.name,
-            coder.team_member&.role
+            coder.team_member&.role,
+            coder.team&.category_label,
+            coder.team&.description
           ]
         end
       end
